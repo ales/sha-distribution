@@ -1,5 +1,7 @@
 import './style.css'
 import { SlidingWindowCounter } from './sliding-window-counter'
+import { HalfFullSlidingCounter } from './HalfFullSlidingCounter'
+import { WhineException } from './WhineException'
 
 const HASH_LENGTH = 384
 const MEMORY_SIZE = 32 * 8 * 2
@@ -28,13 +30,13 @@ function digest(data: Uint8Array): Promise<ArrayBuffer> {
   return crypto.subtle.digest(HASH_ALGO, data)
 }
 
-const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new SlidingWindowCounter(MEMORY_SIZE / 32)).map(f => f())
+const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / 32)).map(f => f())
 
 let totalCount = 0
 
-async function doIt(thicc = 20) {
+async function doIt(thicc = 800) {
   if (thicc > MEMORY_SIZE) {
-    throw new Error(`thicc must be less than or equal to ${MEMORY_SIZE}`)
+    throw new WhineException(`thicc is too thicc! MEMORY_SIZE is only ${MEMORY_SIZE}`)
   }
 
   // generate random inputs
@@ -55,11 +57,9 @@ async function doIt(thicc = 20) {
     }
   }
 
-  totalCount = Math.min(totalCount + thicc, MEMORY_SIZE)
+  totalCount = totalCount + thicc
 
-  const average = freq.map(f => f.counter / totalCount)
-
-  app.innerHTML = average.map(a => `<div style="height: ${(a * 100).toFixed(2)}vh"></div>`).join('')
+  app.innerHTML = freq.map(a => `<div style="height: ${(a.counter / MEMORY_SIZE * 100).toFixed(2)}vh"></div>`).join('')
 
   counter.innerHTML = `${totalCount}`
 
