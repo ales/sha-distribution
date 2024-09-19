@@ -1,8 +1,8 @@
 import './style.css'
-import { Last32TimesX } from './last32x'
+import { SlidingWindowCounter } from './sliding-window-counter'
 
 const HASH_LENGTH = 384
-const MEMORY_SIZE = 32*8*2
+const MEMORY_SIZE = 32 * 8 * 2
 const HASH_ALGO = `SHA-${HASH_LENGTH}`
 
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -28,11 +28,11 @@ function digest(data: Uint8Array): Promise<ArrayBuffer> {
   return crypto.subtle.digest(HASH_ALGO, data)
 }
 
-const freq: Last32TimesX[] = new Array(HASH_LENGTH).fill(() => new Last32TimesX(MEMORY_SIZE/32)).map(f => f())
+const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new SlidingWindowCounter(MEMORY_SIZE / 32)).map(f => f())
 
-let count = 0
+let totalCount = 0
 
-async function doIt(thicc = 40) {
+async function doIt(thicc = 20) {
   if (thicc > MEMORY_SIZE) {
     throw new Error(`thicc must be less than or equal to ${MEMORY_SIZE}`)
   }
@@ -44,7 +44,7 @@ async function doIt(thicc = 40) {
   for (const input of inputs) {
     const hash = await digest(input)
     const hashArray = Array.from(new Uint8Array(hash))
-    
+
     for (let i = 0; i < hashArray.length; i++) {
       let byte = hashArray[i]
       for (let j = 0; j < 8; j++) {
@@ -55,20 +55,20 @@ async function doIt(thicc = 40) {
     }
   }
 
-  count = Math.min(count+thicc, MEMORY_SIZE)
+  totalCount = Math.min(totalCount + thicc, MEMORY_SIZE)
 
-  const average = freq.map(f => f.ones / count)
+  const average = freq.map(f => f.counter / totalCount)
 
   app.innerHTML = average.map(a => `<div style="height: ${(a * 100).toFixed(2)}vh"></div>`).join('')
 
-  counter.innerHTML = `${count}`
+  counter.innerHTML = `${totalCount}`
 
   fps.innerHTML = `${(1000 / (performance.now() - t0)).toFixed(0)} fps`
 
   t0 = performance.now()
 
   window.requestAnimationFrame(async () => {
-      doIt(thicc)
+    doIt(thicc)
   })
 }
 
