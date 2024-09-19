@@ -20,8 +20,8 @@ export class SlidingWindowCounter {
         const currentWord = this.memory[wordIndex];
         const currentValue = (currentWord & (1 << bitIndex)) == 0 ? 0 : 1;
 
-        // clear the bit at the current index. // `~` is the bitwise NOT operator --> e.g. currentWord & 0b111011
-        // and merge in the new value.
+        // - clear the bit at the current index. // `~` is the bitwise NOT operator --> e.g. currentWord & 0b111011
+        // - and merge in the value. // `<<` is the bitwise left shift operator --> 0b10000011 << 2 === 0b00001100
         this.memory[wordIndex] = currentWord & ~(1 << bitIndex) | value << bitIndex;
     
         // update the cached value for fast read access
