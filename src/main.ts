@@ -1,7 +1,7 @@
 import './style.css'
-import { SlidingWindowCounter } from './sliding-window-counter'
-import { HalfFullSlidingCounter } from './HalfFullSlidingCounter'
-import { WhineException } from './WhineException'
+import { SlidingWindowCounter } from './lib/SlidingWindowCounter'
+import { HalfFullSlidingCounter } from './lib/HalfFullSlidingCounter'
+import { WhineException } from './lib/WhineException'
 
 const HASH_LENGTH = 384
 const MEMORY_SIZE = 32 * 16
@@ -24,11 +24,6 @@ fps.style.textAlign = 'right'
 document.body.appendChild(fps)
 
 let t0 = performance.now()
-
-
-function digest(data: Uint8Array): Promise<ArrayBuffer> {
-  return crypto.subtle.digest(HASH_ALGO, data)
-}
 
 const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / 32)).map(f => f())
 
@@ -60,20 +55,20 @@ async function doIt(thicc = 8) {
   totalCount = totalCount + thicc
 
   app.innerHTML = freq.map(a => `<div style="height: ${(a.counter / MEMORY_SIZE * 100).toFixed(2)}vh"></div>`).join('')
-
   counter.innerText = `${MEMORY_SIZE} / ${totalCount}`
-
   fps.innerText = `${(1000 / (performance.now() - t0)).toFixed(0)} fps`
 
   t0 = performance.now()
 
+  
   window.requestAnimationFrame(async () => {
     doIt(thicc)
   })
 }
 
-
 doIt()
+
+// utils
 
 function randomInputs(thicc: number) {
   const inputs: Uint8Array[] = new Array(thicc)
@@ -89,4 +84,8 @@ function randomInputs(thicc: number) {
     inputs[i] = array
   }
   return inputs
+}
+
+function digest(data: Uint8Array): Promise<ArrayBuffer> {
+  return crypto.subtle.digest(HASH_ALGO, data)
 }
