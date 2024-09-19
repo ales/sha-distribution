@@ -24,7 +24,7 @@ fps.style.textAlign = 'right'
 document.body.appendChild(fps)
 
 // counters
-const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / 32)).map(f => f())
+const counters: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / 32)).map(f => f())
 let totalCount = 0
 
 async function doIt(thicc = 8) {
@@ -33,14 +33,14 @@ async function doIt(thicc = 8) {
   }
 
   // calculate the hash of each input and update the frequency array…
-  for (const input of randomInputs(thicc)) {
-    const hashArray = new Uint8Array(await digest(input))
+  for (const input of randomInputs(thicc)) { // for each random input
+    const hashArray = new Uint8Array(await digest(input)) // calculate the hash
 
-    for (let i = 0; i < hashArray.length; i++) { // for each hash
+    for (let i = 0; i < hashArray.length; i++) { // each byte of the hash
       let byte = hashArray[i]
-      for (let j = 0; j < 8; j++) { // for each bit
+      for (let j = 0; j < 8; j++) { // each bit of the byte
         const bit = byte & 1
-        freq[i * 8 + j].write(bit)
+        counters[i * 8 + j].write(bit)
         byte >>= 1
       }
     }
@@ -48,7 +48,7 @@ async function doIt(thicc = 8) {
 
   totalCount = totalCount + thicc
 
-  app.innerHTML = freq.map(a => `<div style="height: ${(a.counter / MEMORY_SIZE * 100).toFixed(2)}vh"></div>`).join('')
+  app.innerHTML = counters.map(a => `<div style="height: ${(a.counter / MEMORY_SIZE * 100).toFixed(2)}vh"></div>`).join('')
   counter.innerText = `${MEMORY_SIZE} / ${totalCount}`
   fps.innerText = `${(1000 / (performance.now() - t0)).toFixed(0)} fps`
 
