@@ -11,6 +11,10 @@ export class SlidingWindowCounter {
         this.index = 0;
     }
 
+    get counter() {
+        return this.count;
+    }
+
     write(value: number) {
         const wordIndex = Math.floor(this.index / WORD_SIZE);
         const bitIndex = this.index % WORD_SIZE;
@@ -27,9 +31,5 @@ export class SlidingWindowCounter {
 
         // loop to zero if we reach the end of the memory
         this.index = (this.index + 1) % (this.size * WORD_SIZE);
-    }
-
-    get counter() {
-        return this.count;
     }
 }
