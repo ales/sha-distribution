@@ -32,13 +32,13 @@ async function doIt(thicc = 8) {
     throw new WhineException(`thicc is too thicc! MEMORY_SIZE is only ${MEMORY_SIZE}`)
   }
 
-  // calculate the hash of each input and update the frequency array for each bit for each hash
+  // calculate the hash of each input and update the frequency array…
   for (const input of randomInputs(thicc)) {
     const hashArray = new Uint8Array(await digest(input))
 
-    for (let i = 0; i < hashArray.length; i++) {
+    for (let i = 0; i < hashArray.length; i++) { // for each hash
       let byte = hashArray[i]
-      for (let j = 0; j < 8; j++) {
+      for (let j = 0; j < 8; j++) { // for each bit
         const bit = byte & 1
         freq[i * 8 + j].write(bit)
         byte >>= 1
