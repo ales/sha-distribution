@@ -4,7 +4,7 @@ export class HalfFullSlidingCounter extends SlidingWindowCounter {
     constructor(size: number = 1) {
         super(
             size,
-            new Uint32Array(size).fill(0b10101010101010101010101010101010),
+            new Uint8Array(size).fill(0b01010101),
             Math.floor(size * WORD_SIZE / 2)
         );
     }

@@ -1,10 +1,10 @@
 import './style.css'
-import { SlidingWindowCounter } from './lib/SlidingWindowCounter'
+import { SlidingWindowCounter, WORD_SIZE } from './lib/SlidingWindowCounter'
 import { HalfFullSlidingCounter } from './lib/HalfFullSlidingCounter'
 import { WhineException } from './lib/WhineException'
 
-const HASH_LENGTH = 384
-const MEMORY_SIZE = 32 * 16
+const HASH_LENGTH = 256
+const MEMORY_SIZE = WORD_SIZE * 128
 const HASH_ALGO = `SHA-${HASH_LENGTH}`
 
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -24,7 +24,7 @@ fps.style.textAlign = 'right'
 document.body.appendChild(fps)
 
 // counters
-const counters: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / 32)).map(f => f())
+const counters: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / WORD_SIZE)).map(f => f())
 let totalCount = 0
 
 async function doIt(thicc = 8) {

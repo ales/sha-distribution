@@ -1,11 +1,11 @@
-export const WORD_SIZE = 32;
+export const WORD_SIZE = 8;
 
 export class SlidingWindowCounter {
     private index: number = 0;
 
     constructor(
         private size: number = 1,
-        private memory: Uint32Array = new Uint32Array(size), // is WORD_SIZE dependent
+        private memory: Uint8Array = new Uint8Array(size), // is WORD_SIZE dependent
         private count: number = 0
     ) {}
 
