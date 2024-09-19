@@ -4,7 +4,7 @@ import { HalfFullSlidingCounter } from './HalfFullSlidingCounter'
 import { WhineException } from './WhineException'
 
 const HASH_LENGTH = 384
-const MEMORY_SIZE = 32 * 8 * 2
+const MEMORY_SIZE = 32 * 16
 const HASH_ALGO = `SHA-${HASH_LENGTH}`
 
 const app = document.querySelector<HTMLDivElement>('#app')!
@@ -34,7 +34,7 @@ const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfF
 
 let totalCount = 0
 
-async function doIt(thicc = 800) {
+async function doIt(thicc = 8) {
   if (thicc > MEMORY_SIZE) {
     throw new WhineException(`thicc is too thicc! MEMORY_SIZE is only ${MEMORY_SIZE}`)
   }
@@ -61,9 +61,9 @@ async function doIt(thicc = 800) {
 
   app.innerHTML = freq.map(a => `<div style="height: ${(a.counter / MEMORY_SIZE * 100).toFixed(2)}vh"></div>`).join('')
 
-  counter.innerHTML = `${totalCount}`
+  counter.innerText = `${MEMORY_SIZE} / ${totalCount}`
 
-  fps.innerHTML = `${(1000 / (performance.now() - t0)).toFixed(0)} fps`
+  fps.innerText = `${(1000 / (performance.now() - t0)).toFixed(0)} fps`
 
   t0 = performance.now()
 
