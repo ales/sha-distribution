@@ -9,13 +9,13 @@ const HASH_ALGO = `SHA-${HASH_LENGTH}`
 
 const app = document.querySelector<HTMLDivElement>('#app')!
 
-// display count
+// `count` display
 const counter = document.createElement('pre')
 counter.style.position = 'absolute'
 counter.style.bottom = '0'
 document.body.appendChild(counter)
 
-// display fps
+// `fps` display
 const fps = document.createElement('pre')
 fps.style.position = 'absolute'
 fps.style.bottom = '0'
@@ -23,10 +23,8 @@ fps.style.right = '1rem'
 fps.style.textAlign = 'right'
 document.body.appendChild(fps)
 
-let t0 = performance.now()
-
+// counters
 const freq: SlidingWindowCounter[] = new Array(HASH_LENGTH).fill(() => new HalfFullSlidingCounter(MEMORY_SIZE / 32)).map(f => f())
-
 let totalCount = 0
 
 async function doIt(thicc = 8) {
@@ -34,13 +32,9 @@ async function doIt(thicc = 8) {
     throw new WhineException(`thicc is too thicc! MEMORY_SIZE is only ${MEMORY_SIZE}`)
   }
 
-  // generate random inputs
-  const inputs: Uint8Array[] = randomInputs(thicc)
-
   // calculate the hash of each input and update the frequency array
-  for (const input of inputs) {
-    const hash = await digest(input)
-    const hashArray = Array.from(new Uint8Array(hash))
+  for (const input of randomInputs(thicc)) {
+    const hashArray = new Uint8Array(await digest(input))
 
     for (let i = 0; i < hashArray.length; i++) {
       let byte = hashArray[i]
@@ -60,13 +54,17 @@ async function doIt(thicc = 8) {
 
   t0 = performance.now()
 
-  
+
   window.requestAnimationFrame(async () => {
     doIt(thicc)
   })
 }
 
+// benchmark
+let t0 = performance.now()
+
 doIt()
+
 
 // utils
 
